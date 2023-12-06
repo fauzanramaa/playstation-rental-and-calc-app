@@ -1,0 +1,649 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+
+/**
+ *
+ * @author Fauzanramaa
+ */
+import java.awt.Image;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+public class RentalPS extends javax.swing.JFrame {
+    
+    private static Connection koneksi;
+    private DefaultTableModel model; 
+
+    /**
+     * Creates new form Program2
+     */
+    public RentalPS() {
+        initComponents();
+        model=new DefaultTableModel();
+        this.table1.setModel(model);
+        model.addColumn("ID");
+        model.addColumn("Nama");
+        model.addColumn("Paket");
+        model.addColumn("Waktu");
+        model.addColumn("Pinjam");
+        model.addColumn("Kembali");
+        model.addColumn("Total");
+    }
+    
+    private static Connection buka_koneksi() {
+        if (koneksi==null) {
+            try {
+                String url="jdbc:mysql://localhost/dbrental"; //database
+                String user="root";
+                String password="";
+                
+                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+                koneksi=DriverManager.getConnection(url,user,password);
+                System.out.println("Berhasil");
+            } catch (SQLException t){
+                System.out.println("Error membuat koneksi");
+            }
+        }
+      return koneksi;
+    }
+    
+    private void ambil_data_tabel() {
+    model.getDataVector().removeAllElements();
+    model.fireTableDataChanged();
+    try {
+        Connection c = buka_koneksi();
+        Statement s = c.createStatement();
+        String sql = "SELECT * FROM rental";
+        ResultSet r = s.executeQuery(sql);
+
+        while (r.next()) {
+            Object[] o = new Object[7]; // membuat array dengan 7 elemen
+            o[0] = r.getString("id");
+            o[1] = r.getString("nama");
+            o[2] = r.getString("paket");
+            o[3] = r.getInt("waktu"); // mengambil nilai dari kolom waktu dengan tipe data int
+            o[4] = r.getDate("tglpinjam");
+            o[5] = r.getDate("tglkembali");
+            o[6] = r.getInt("total"); // mengambil nilai dari kolom total dengan tipe data int
+            model.addRow(o);
+        }
+            r.close();
+            s.close();
+            ambil_tabel_klik();
+        } catch(SQLException e) {
+            System.out.println("Terjadi kesalahan "+e.getMessage());
+        }
+    }
+    
+    private void ambil_tabel_klik() {
+    int i = this.table1.getSelectedRow();
+
+        if (i == -1) {
+            return;
+        }
+            String kode = (String) model.getValueAt(i, 0);
+            this.lblKode.setText(kode);
+            String nama = (String) model.getValueAt(i, 1);
+            this.textNama.setText(nama);
+            String paket = (String) model.getValueAt(i, 2);
+            this.comboPaket.setSelectedItem(paket); // mengubah nilai pada JComboBox
+            int waktu = (int) model.getValueAt(i, 3);
+            this.Spinner1.setValue(waktu); // mengubah nilai pada JSpinner
+            Date tglpinjam = (Date) model.getValueAt(i, 4);
+            this.DatePinjam.setDate(tglpinjam); // mengubah nilai pada JDateChooser
+            Date tglkembali = (Date) model.getValueAt(i, 5);
+            this.DateKembali.setDate(tglkembali); // mengubah nilai pada JDateChooser
+            int total = (int) model.getValueAt(i, 6);
+            this.textTotal.setText(String.valueOf(total)); // mengubah nilai pada JTextField
+    }
+    
+    private void updateTextTotal() {
+        // Menghitung total berdasarkan paket dan waktu yang dipilih
+        int harga = 0;
+        String paket = (String) this.comboPaket.getSelectedItem();
+        int waktu = (int) this.Spinner1.getValue();
+        if (paket.equals("Paket 1 : PS Only")) {
+            harga = 40000;
+        } else if (paket.equals("Paket 2 : PS + Stik ")) {
+            harga = 50000;
+        } else if (paket.equals("Paket 3 : PS + Stik + TV")) {
+            harga = 80000;
+        }
+        int total = harga * waktu;
+        // Mengatur nilai textTotal sesuai dengan total yang dihitung
+        this.textTotal.setText(Integer.toString(total));
+    }
+
+
+   
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        kGradientPanel1 = new keeptoo.KGradientPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        Spinner1 = new javax.swing.JSpinner();
+        btnUbah = new javax.swing.JButton();
+        DatePinjam = new com.toedter.calendar.JDateChooser();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table1 = new javax.swing.JTable();
+        DateKembali = new com.toedter.calendar.JDateChooser();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        btnHapus = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        btnSegarkan = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        lblKode = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        textTotal = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        comboPaket = new javax.swing.JComboBox<>();
+        btnTambah = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        textNama = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Rental PS Pak Joko");
+        setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Calisto MT", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("RENTAL PS 5");
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jLabel2.setFont(new java.awt.Font("Calisto MT", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("PAK JOKO");
+        jLabel2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        Spinner1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        btnUbah.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnUbah.setText("Ubah");
+        btnUbah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUbahActionPerformed(evt);
+            }
+        });
+
+        DatePinjam.setDateFormatString("d, MMM y");
+        DatePinjam.setFont(new java.awt.Font("Calisto MT", 0, 14)); // NOI18N
+
+        table1.setFont(new java.awt.Font("Calisto MT", 0, 14)); // NOI18N
+        table1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Nama", "Paket", "Waktu", "Pinjam", "Kembali", "Total"
+            }
+        ));
+        table1.setShowGrid(true);
+        table1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table1MouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(table1);
+
+        DateKembali.setDateFormatString("d, MMM y");
+        DateKembali.setFont(new java.awt.Font("Calisto MT", 0, 14)); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Calisto MT", 0, 18)); // NOI18N
+        jLabel3.setText("Nama");
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("Rp");
+
+        jLabel4.setFont(new java.awt.Font("Calisto MT", 0, 18)); // NOI18N
+        jLabel4.setText("Paket");
+
+        btnHapus.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnHapus.setText("Hapus");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Calisto MT", 0, 18)); // NOI18N
+        jLabel5.setText("Waktu");
+
+        btnSegarkan.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnSegarkan.setText("Segarkan");
+        btnSegarkan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSegarkanActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Calisto MT", 0, 18)); // NOI18N
+        jLabel6.setText("Tanggal Pinjam");
+
+        lblKode.setText("0");
+
+        jLabel7.setFont(new java.awt.Font("Calisto MT", 0, 18)); // NOI18N
+        jLabel7.setText("Tanggal Kembali");
+
+        textTotal.setFont(new java.awt.Font("Calisto MT", 1, 14)); // NOI18N
+
+        jLabel8.setFont(new java.awt.Font("Calisto MT", 0, 18)); // NOI18N
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Total");
+        jLabel8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        comboPaket.setFont(new java.awt.Font("Calisto MT", 1, 14)); // NOI18N
+        comboPaket.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "- Pilih Paket", "Paket 1 : PS Only", "Paket 2 : PS + Stik ", "Paket 3 : PS + Stik + TV" }));
+
+        btnTambah.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnTambah.setText("Tambah");
+        btnTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel10.setText("Hari");
+
+        textNama.setFont(new java.awt.Font("Calisto MT", 0, 14)); // NOI18N
+
+        jLabel11.setIcon(new javax.swing.ImageIcon("C:\\Users\\Fauzanramaa\\Pictures\\PosterPS1.png")); // NOI18N
+
+        javax.swing.GroupLayout kGradientPanel1Layout = new javax.swing.GroupLayout(kGradientPanel1);
+        kGradientPanel1.setLayout(kGradientPanel1Layout);
+        kGradientPanel1Layout.setHorizontalGroup(
+            kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                .addGap(203, 203, 203)
+                                .addComponent(btnTambah, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnUbah, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnHapus, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSegarkan, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                                .addGap(16, 16, 16))
+                            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kGradientPanel1Layout.createSequentialGroup()
+                                        .addGap(161, 161, 161)
+                                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(textTotal)
+                                        .addGap(147, 147, 147))
+                                    .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel5))
+                                        .addGap(150, 150, 150)
+                                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                                .addComponent(comboPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                                .addComponent(Spinner1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addComponent(textNama)))
+                                    .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel7)
+                                        .addGap(70, 70, 70)
+                                        .addComponent(DateKembali, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lblKode, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(66, 66, 66)
+                                .addComponent(DatePinjam, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(54, 54, 54)))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kGradientPanel1Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(35, 35, 35))
+        );
+        kGradientPanel1Layout.setVerticalGroup(
+            kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(textNama, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)
+                            .addComponent(lblKode))
+                        .addGap(18, 18, 18)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addGap(13, 13, 13)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Spinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel10))
+                        .addGap(18, 18, 18)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(DatePinjam, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel7))
+                            .addComponent(DateKembali, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9))
+                        .addGap(18, 18, 18)
+                        .addGroup(kGradientPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnTambah, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnUbah, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSegarkan, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(kGradientPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(33, 33, 33)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+                .addGap(25, 25, 25))
+        );
+
+        jLabel1.getAccessibleContext().setAccessibleDescription("");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(kGradientPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(kGradientPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        setSize(new java.awt.Dimension(1029, 668));
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
+        // TODO add your handling code here:
+        this.ambil_tabel_klik();
+    }//GEN-LAST:event_table1MouseClicked
+
+    private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
+        // TODO add your handling code here:
+        if("Ubah".equals(this.btnUbah.getText())) {
+            this.btnTambah.setText("Perbarui");
+            this.btnUbah.setText("Batal");
+            this.btnHapus.enable(false);
+            this.btnSegarkan.enable(false);
+            this.comboPaket.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    updateTextTotal();
+                }
+            });
+            this.Spinner1.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    updateTextTotal();
+                }
+            });
+
+            updateTextTotal(); // Memanggil method updateTextTotal() agar nilai textTotal muncul saat halaman di-load
+        } else if ("Batal".equals(this.btnUbah.getText())) {
+            this.btnTambah.setText("Tambah");
+            this.btnUbah.setText("Ubah");
+            this.btnHapus.enable(true);
+            this.btnSegarkan.enable(true);
+        }
+    }//GEN-LAST:event_btnUbahActionPerformed
+
+    private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
+        // TODO add your handling code here:
+        Connection c=buka_koneksi();
+        if("Tambah".equals(this.btnTambah.getText())) {
+            this.btnTambah.setText("Simpan");
+            this.btnUbah.setText("Batal");
+            this.btnHapus.enable(false);
+            this.btnSegarkan.enable(false);
+            this.lblKode.setText("0");
+            this.comboPaket.setSelectedItem("");
+            this.DatePinjam.setDate(this.DatePinjam.getDate());
+            this.DateKembali.setDate(this.DateKembali.getDate());
+            this.textTotal.setText("");
+            updateTextTotal();
+            this.Spinner1.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    updateTextTotal();
+                }
+            });
+            this.comboPaket.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    updateTextTotal();
+                }
+            });
+        }else if("Simpan".equals(this.btnTambah.getText())) {
+            String paket = (String) this.comboPaket.getSelectedItem(); // menggunakan casting untuk mendapatkan nilai yang dipilih pada JComboBox
+            int waktu = (int) this.Spinner1.getValue(); // menggunakan method getValue() untuk mendapatkan nilai yang dipilih pada JSpinner
+            String tglpinjam = null;
+            String tglkembali = null; // inisialisasi tglpinjam dan tglkembali dengan null
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            // Memeriksa apakah tanggal pinjam telah diisi
+            if (this.DatePinjam.getDate() == null) {
+                JOptionPane.showMessageDialog(this, "Tanggal pinjam harus diisi!");
+                return;
+            } else {
+                tglpinjam = dateFormat.format(this.DatePinjam.getDate()); // menggunakan SimpleDateFormat untuk mengubah nilai Date menjadi string dengan format yang sesuai
+            }
+            // Memeriksa apakah tanggal kembali telah diisi
+            if (this.DateKembali.getDate() == null) {
+                JOptionPane.showMessageDialog(this, "Tanggal kembali harus diisi!");
+                return;
+            } else {
+                tglkembali = dateFormat.format(this.DateKembali.getDate());
+            }
+            String sqlkode = "INSERT INTO rental (nama, paket, waktu, tglpinjam, tglkembali, total) VALUES ('" + this.textNama.getText() + "', '"
+            + paket + "', '"
+            + waktu + "', '"
+            + tglpinjam + "', '"
+            + tglkembali + "', '"
+            + this.textTotal.getText() + "')";
+            System.out.println(sqlkode);
+            try{
+                PreparedStatement p2=(PreparedStatement) c.prepareStatement(sqlkode);
+                p2.executeUpdate();
+                p2.close();
+            } catch (SQLException ex){
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan "+ex.getMessage());
+            }
+            finally{ambil_data_tabel();}
+        }else if ("Perbarui".equals(this.btnTambah.getText())) {
+            String paket = (String) this.comboPaket.getSelectedItem(); // menggunakan casting untuk mendapatkan nilai yang dipilih pada JComboBox
+            int waktu = (int) this.Spinner1.getValue(); // menggunakan method getValue() untuk mendapatkan nilai yang dipilih pada JSpinner
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // membuat instance SimpleDateFormat dengan format tanggal yang sesuai
+            String tglpinjam = dateFormat.format(this.DatePinjam.getDate()); // menggunakan SimpleDateFormat untuk mengubah nilai Date menjadi string dengan format yang sesuai
+            String tglkembali = dateFormat.format(this.DateKembali.getDate());
+            this.comboPaket.addActionListener(new ActionListener() { // Memanggil method updateTextTotal() saat terjadi perubahan pada comboPaket atau Spinner1
+                public void actionPerformed(ActionEvent e) {
+                    updateTextTotal();
+                }
+            });
+            this.Spinner1.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    updateTextTotal();
+                }
+            });
+            updateTextTotal(); // Memanggil method updateTextTotal() agar nilai textTotal muncul saat halaman di-load
+            String sqlkode = "UPDATE rental SET nama='" + this.textNama.getText() + "', "
+            + "paket='" + paket + "', "
+            + "waktu='" + waktu + "', "
+            + "tglpinjam='" + tglpinjam + "', "
+            + "tglkembali='" + tglkembali + "', "
+            + "total='" + this.textTotal.getText() + "' WHERE ID='" + this.lblKode.getText() + "'";
+            try{
+                PreparedStatement p2=(PreparedStatement) c.prepareStatement(sqlkode);
+                p2.executeUpdate();
+                p2.close();
+            } catch (SQLException ex){
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan "+ex.getMessage());
+            }
+            this.btnTambah.setText("Tambah");
+            this.btnUbah.setText("Ubah");
+            this.btnHapus.enable(true);
+            this.btnSegarkan.enable(true);
+        }
+    }//GEN-LAST:event_btnTambahActionPerformed
+
+    private void btnSegarkanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSegarkanActionPerformed
+        // TODO add your handling code here:
+        ambil_data_tabel();
+    }//GEN-LAST:event_btnSegarkanActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        // TODO add your handling code here:
+        Connection c=buka_koneksi();
+        String sqlkode="Delete from rental Where ID='"+this.lblKode.getText()+"'";
+        try {
+            PreparedStatement p2=(PreparedStatement) c.prepareStatement(sqlkode);
+            p2.executeUpdate();
+            p2.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan "+ex.getMessage());
+        }
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        try {
+        Image img = ImageIO.read(getClass().getResource("RentalPS.png"));
+        this.setIconImage(img);
+        this.setLocationRelativeTo(null);
+        } catch (IOException ex) {
+            Logger.getLogger(Calc.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        buka_koneksi();
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(RentalPS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(RentalPS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(RentalPS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(RentalPS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new RentalPS().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.toedter.calendar.JDateChooser DateKembali;
+    private com.toedter.calendar.JDateChooser DatePinjam;
+    private javax.swing.JSpinner Spinner1;
+    private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnSegarkan;
+    private javax.swing.JButton btnTambah;
+    private javax.swing.JButton btnUbah;
+    private javax.swing.JComboBox<String> comboPaket;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private keeptoo.KGradientPanel kGradientPanel1;
+    private javax.swing.JLabel lblKode;
+    private javax.swing.JTable table1;
+    private javax.swing.JTextField textNama;
+    private javax.swing.JTextField textTotal;
+    // End of variables declaration//GEN-END:variables
+}
